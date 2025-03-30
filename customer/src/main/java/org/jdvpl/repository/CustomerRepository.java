@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class CustomerRepository {
+
     @Inject
     EntityManager entityManager;
 
@@ -19,14 +20,14 @@ public class CustomerRepository {
     public Customer save(Customer customer) {
         entityManager.persist(customer);
         entityManager.flush();
-        System.out.println(customer);
-        return  customer;
+        return customer;
     }
 
     @Transactional
     public void update(Customer customer) {
         entityManager.merge(customer);
     }
+
     @Transactional
     public void delete(Long id) {
         Customer customer = entityManager.find(Customer.class, id);
@@ -34,13 +35,19 @@ public class CustomerRepository {
             entityManager.remove(customer);
         }
     }
-    @Transactional
+
     public Optional<Customer> findById(Long id) {
         return Optional.ofNullable(entityManager.find(Customer.class, id));
     }
-    @Transactional
+
     public List<Customer> findAll() {
         TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c", Customer.class);
         return query.getResultList();
+    }
+
+    public Optional<Customer> findByCode(String code) {
+        TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.code = :code", Customer.class);
+        query.setParameter("code", code);
+        return query.getResultStream().findFirst();
     }
 }

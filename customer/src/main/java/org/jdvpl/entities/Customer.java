@@ -1,12 +1,13 @@
 package org.jdvpl.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +24,8 @@ public class Customer {
     private String surname;
     private String phone;
     private String address;
+    @OneToMany(mappedBy = "customer",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<Product> products;
 }

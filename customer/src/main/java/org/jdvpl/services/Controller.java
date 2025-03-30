@@ -19,10 +19,16 @@ public class Controller {
     CustomerRepository customerRepository;
 
     @POST
-    @Path("create")
     public Response create(Customer customer) {
-        customerRepository.save(customer);
-        return Response.status(Response.Status.CREATED).entity(customer).build();
+        try{
+            Customer savedCustomer = customerRepository.save(customer);
+            System.out.println(savedCustomer);
+            return Response.status(Response.Status.CREATED).entity(savedCustomer).build();
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @PUT
@@ -41,12 +47,23 @@ public class Controller {
     @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        return customer.map(Response::ok).orElse(Response.status(Response.Status.NOT_FOUND)).build();
+        return customerRepository.findById(id)
+                .map(Response::ok)
+                .orElse(Response.status(Response.Status.NOT_FOUND))
+                .build();
     }
 
     @GET
     public List<Customer> findAll() {
         return customerRepository.findAll();
+    }
+
+    @GET
+    @Path("/code/{code}")
+    public Response findByCode(@PathParam("code") String code) {
+        return customerRepository.findByCode(code)
+                .map(Response::ok)
+                .orElse(Response.status(Response.Status.NOT_FOUND))
+                .build();
     }
 }
